@@ -28,17 +28,26 @@ extern "C" {
 # define OPENSSL_SYS_tvOS 1
 #endif
 #define OPENSSL_MIN_API 0x10100000L
+#ifndef OPENSSL_NO_IDEA
+# define OPENSSL_NO_IDEA
+#endif
 #ifndef OPENSSL_NO_MD2
 # define OPENSSL_NO_MD2
 #endif
 #ifndef OPENSSL_NO_RC5
 # define OPENSSL_NO_RC5
 #endif
+#ifndef OPENSSL_NO_SRP
+# define OPENSSL_NO_SRP
+#endif
 #ifndef OPENSSL_THREADS
 # define OPENSSL_THREADS
 #endif
 #ifndef OPENSSL_RAND_SEED_OS
 # define OPENSSL_RAND_SEED_OS
+#endif
+#ifndef OPENSSL_NO_AFALGENG
+# define OPENSSL_NO_AFALGENG
 #endif
 #ifndef OPENSSL_NO_ASAN
 # define OPENSSL_NO_ASAN
@@ -58,11 +67,17 @@ extern "C" {
 #ifndef OPENSSL_NO_DEVCRYPTOENG
 # define OPENSSL_NO_DEVCRYPTOENG
 #endif
+#ifndef OPENSSL_NO_DSO
+# define OPENSSL_NO_DSO
+#endif
 #ifndef OPENSSL_NO_EC_NISTP_64_GCC_128
 # define OPENSSL_NO_EC_NISTP_64_GCC_128
 #endif
 #ifndef OPENSSL_NO_EGD
 # define OPENSSL_NO_EGD
+#endif
+#ifndef OPENSSL_NO_ENGINE
+# define OPENSSL_NO_ENGINE
 #endif
 #ifndef OPENSSL_NO_EXTERNAL_TESTS
 # define OPENSSL_NO_EXTERNAL_TESTS
@@ -75,6 +90,9 @@ extern "C" {
 #endif
 #ifndef OPENSSL_NO_HEARTBEATS
 # define OPENSSL_NO_HEARTBEATS
+#endif
+#ifndef OPENSSL_NO_HW
+# define OPENSSL_NO_HW
 #endif
 #ifndef OPENSSL_NO_MSAN
 # define OPENSSL_NO_MSAN
@@ -105,9 +123,6 @@ extern "C" {
 #endif
 #ifndef OPENSSL_NO_DYNAMIC_ENGINE
 # define OPENSSL_NO_DYNAMIC_ENGINE
-#endif
-#ifndef OPENSSL_NO_AFALGENG
-# define OPENSSL_NO_AFALGENG
 #endif
 
 

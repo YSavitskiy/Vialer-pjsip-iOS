@@ -14,11 +14,11 @@ export IOS_SDK_VERSION="13.2"
 export AVIALABLE_ARCHS
 export USE_ARCHS=()
 
-export DOWNLOAD_PJSIP_SRC=true
-export CLEAN_PJSIP_SRC=true
-export SSL_SUPPORT=false
-export OPUS_SUPPORT=false
-export H264_SUPPORT=false
+export DOWNLOAD_PJSIP_SRC=false
+export CLEAN_PJSIP_SRC=false
+export SSL_SUPPORT=true
+export OPUS_SUPPORT=true
+export H264_SUPPORT=true
 export INDEPENDENT_WEBRTC=false
 export ENABLE_ZRTP=false
 export HAS_BITCODE=true
@@ -266,19 +266,22 @@ function build_ssl () {
         return
     fi
 
-    echo "Use ssl"
-    rm -rf $SSL_BUILD_DIR
-    mkdir -p $SSL_BUILD_DIR
+    #echo "Use ssl"
+    #rm -rf $SSL_BUILD_DIR
+    #mkdir -p $SSL_BUILD_DIR
 
     pushd . > /dev/null
     cd $SSL_BUILD_DIR
 
     # Download OpenSSL repo.
-    ssl_url="https://github.com/x2on/OpenSSL-for-iPhone/archive/master.tar.gz"
-    curl -LO $ssl_url
-    tar zxf "master.tar.gz" --strip 1
-    rm "master.tar.gz"
-    ./build-libssl.sh --version=1.1.1d --archs="${USE_ARCHS[*]// /\s}" || exit
+    #ssl_url="https://github.com/x2on/OpenSSL-for-iPhone/archive/master.tar.gz"
+    #curl -LO $ssl_url
+    #tar zxf "master.tar.gz" --strip 1
+    #rm "master.tar.gz"
+
+    #exit
+
+    ./build-libssl.sh --version=1.1.1e --archs="${USE_ARCHS[*]// /\s}" || exit
     mv include include2
     mkdir -p include
     mv include2/openssl include/openssl
@@ -466,9 +469,18 @@ function config_site () {
 
     echo "#define PJ_CONFIG_IPHONE 1" >> $PJSIP_CONFIG_SITE_H
 
-    if [ $INDEPENDENT_WEBRTC = true ]; then
-        echo "#define PJMEDIA_HAS_SRTP 0" >> $PJSIP_CONFIG_SITE_H
-    fi
+    echo "#ifdef PJMEDIA_AUDIO_DEV_HAS_OPENSL" >> $PJSIP_CONFIG_SITE_H
+    echo "#undef PJMEDIA_AUDIO_DEV_HAS_OPENSL" >> $PJSIP_CONFIG_SITE_H
+    echo "#endif" >> $PJSIP_CONFIG_SITE_H
+    echo "#define PJMEDIA_AUDIO_DEV_HAS_OPENSL 0" >> $PJSIP_CONFIG_SITE_H
+    echo "#define PJSIP_AUTH_AUTO_SEND_NEXT 0" >> $PJSIP_CONFIG_SITE_H
+    echo "#define PJMEDIA_HAS_GSM_CODEC 0" >> $PJSIP_CONFIG_SITE_H
+    echo "#define PJMEDIA_SRTP_HAS_DTLS 1">> $PJSIP_CONFIG_SITE_H
+    echo "#define PJMEDIA_HAS_OPUS_CODEC 1" >> $PJSIP_CONFIG_SITE_H
+    echo "#define PJ_AUTOCONF 1" >> $PJSIP_CONFIG_SITE_H
+    
+    echo "#define PJMEDIA_HAS_SRTP 1" >> $PJSIP_CONFIG_SITE_H
+    
 
     if [ $H264_SUPPORT = true ]; then
         echo "#define PJMEDIA_HAS_VIDEO 1" >> $PJSIP_CONFIG_SITE_H
@@ -509,33 +521,33 @@ function build_archs () {
 
 function configure_armv7 () {
     echo "Configure for armv7"
-    export CFLAGS="-miphoneos-version-min=$MIN_IOS_VERSION"
+    export CFLAGS="-miphoneos-version-min=$MIN_IOS_VERSION -enable-epoll"
     export LDFLAGS=
 }
 
 function configure_armv7s () {
     echo "Configure for armv7s"
-    export CFLAGS="-miphoneos-version-min=$MIN_IOS_VERSION"
+    export CFLAGS="-miphoneos-version-min=$MIN_IOS_VERSION -enable-epoll"
     export LDFLAGS=
 }
 
 function configure_arm64 () {
     echo "Configure for arm64"
-    export CFLAGS="-miphoneos-version-min=$MIN_IOS_VERSION"
+    export CFLAGS="-miphoneos-version-min=$MIN_IOS_VERSION -enable-epoll"
     export LDFLAGS=
 }
 
 function configure_i386 () {
     echo "Configure for i386"
     export DEVPATH=$XCODE_SIMULATOR_DEV_PATH
-    export CFLAGS="-O2 -m32 -mios-simulator-version-min=$MIN_IOS_VERSION"
+    export CFLAGS="-O2 -m32 -mios-simulator-version-min=$MIN_IOS_VERSION -enable-epoll"
     export LDFLAGS="-O2 -m32 -mios-simulator-version-min=$MIN_IOS_VERSION -Wl,-no_compact_unwind"
 }
 
 function configure_x86_64 () {
     echo "Configure for x86_64"
     export DEVPATH=$XCODE_SIMULATOR_DEV_PATH
-    export CFLAGS="-O2 -m32 -mios-simulator-version-min=$MIN_IOS_VERSION"
+    export CFLAGS="-O2 -m32 -mios-simulator-version-min=$MIN_IOS_VERSION -enable-epoll"
     export LDFLAGS="-O2 -m32 -mios-simulator-version-min=$MIN_IOS_VERSION -Wl,-no_compact_unwind"
 }
 
@@ -788,8 +800,9 @@ fi
 if [ $SHOW_HELP = true ]; then
     show_help
 else
-    clean_pjsip
-    download_pjsip
+    #clean_pjsip
+    #download_pjsip
+    #sh '../../pjsippatches'
     build_h264
     build_ssl
     build_opus
