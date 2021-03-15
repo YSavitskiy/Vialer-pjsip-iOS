@@ -14,8 +14,8 @@ export IOS_SDK_VERSION="13.2"
 export AVIALABLE_ARCHS
 export USE_ARCHS=()
 
-export DOWNLOAD_PJSIP_SRC=false
-export CLEAN_PJSIP_SRC=false
+export DOWNLOAD_PJSIP_SRC=true
+export CLEAN_PJSIP_SRC=true
 export SSL_SUPPORT=true
 export OPUS_SUPPORT=true
 export H264_SUPPORT=true
@@ -267,19 +267,19 @@ function build_ssl () {
     fi
 
     #echo "Use ssl"
-    #rm -rf $SSL_BUILD_DIR
-    #mkdir -p $SSL_BUILD_DIR
+    rm -rf $SSL_BUILD_DIR
+    mkdir -p $SSL_BUILD_DIR
 
     pushd . > /dev/null
     cd $SSL_BUILD_DIR
 
     # Download OpenSSL repo.
-    #ssl_url="https://github.com/x2on/OpenSSL-for-iPhone/archive/master.tar.gz"
-    #curl -LO $ssl_url
-    #tar zxf "master.tar.gz" --strip 1
-    #rm "master.tar.gz"
+    ssl_url="https://github.com/x2on/OpenSSL-for-iPhone/archive/master.tar.gz"
+    curl -LO $ssl_url
+    tar zxf "master.tar.gz" --strip 1
+    rm "master.tar.gz"
 
-    #exit
+    cp -R "../../../build-libssl.sh" "build-libssl.sh"
 
     ./build-libssl.sh --version=1.1.1e --archs="${USE_ARCHS[*]// /\s}" || exit
     mv include include2
@@ -469,6 +469,7 @@ function config_site () {
 
     echo "#define PJ_CONFIG_IPHONE 1" >> $PJSIP_CONFIG_SITE_H
 
+    #fixes
     echo "#ifdef PJMEDIA_AUDIO_DEV_HAS_OPENSL" >> $PJSIP_CONFIG_SITE_H
     echo "#undef PJMEDIA_AUDIO_DEV_HAS_OPENSL" >> $PJSIP_CONFIG_SITE_H
     echo "#endif" >> $PJSIP_CONFIG_SITE_H
@@ -477,8 +478,7 @@ function config_site () {
     echo "#define PJMEDIA_HAS_GSM_CODEC 0" >> $PJSIP_CONFIG_SITE_H
     echo "#define PJMEDIA_SRTP_HAS_DTLS 1">> $PJSIP_CONFIG_SITE_H
     echo "#define PJMEDIA_HAS_OPUS_CODEC 1" >> $PJSIP_CONFIG_SITE_H
-    echo "#define PJ_AUTOCONF 1" >> $PJSIP_CONFIG_SITE_H
-    
+    echo "#define PJ_AUTOCONF 1" >> $PJSIP_CONFIG_SITE_H    
     echo "#define PJMEDIA_HAS_SRTP 1" >> $PJSIP_CONFIG_SITE_H
     
 
@@ -800,9 +800,9 @@ fi
 if [ $SHOW_HELP = true ]; then
     show_help
 else
-    #clean_pjsip
-    #download_pjsip
-    #sh '../../pjsippatches'
+    clean_pjsip
+    download_pjsip
+    sh '../../pjsippatches'
     build_h264
     build_ssl
     build_opus
