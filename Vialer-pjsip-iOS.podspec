@@ -18,7 +18,8 @@ Pod::Spec.new do |s|
 	s.public_header_files   = "VialerPJSIP.framework/Versions/A/Headers/**/*.{h,hpp}"
 	s.source_files		    = "VialerPJSIP.framework/Versions/A/Headers/**/*.{h,hpp}"
 	s.vendored_frameworks   = "VialerPJSIP.framework"
-
+	s.static_framework = true
+	
 	s.libraries 			= 'stdc++'
 	s.frameworks            = "AudioToolbox", "AVFoundation", "CFNetwork",  "CoreMedia"
 	s.xcconfig = {
